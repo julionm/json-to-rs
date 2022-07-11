@@ -26,6 +26,25 @@ fn match_first_literal<'a>(expected: &'static str)
     }
 }
 
+fn zero_or_more<'a, T>(parser: T) 
+    -> impl Fn(&'a str) -> Result<&'a str, &str>
+    where
+        T: Fn(char) -> bool
+{
+    move |input: &'a str| {
+        let mut result = 0;
+ 
+        for c in input.chars() {
+            match parser(c) {
+                true => result += 1,
+                false => break
+            }
+        }
+
+        Ok(&input[result..])
+    }
+}
+
 pub fn attribute_name(input: &str) -> Result<String, &str> {
     // TODO write the code to get the JSON attribute name 
 
@@ -51,6 +70,14 @@ fn verify_attr_type() {
     // TODO make this to see which is the type of JSON attribute
 }
 
+fn create_struct(input: String) {
+    // ? transforms
+
+    // * Element
+
+    // TODO create the structs
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -70,20 +97,12 @@ mod tests {
         )
     }
 
+    #[test]
+    fn test_zero_or_more() {
+        assert_eq!(
+            Ok("anything"),
+            zero_or_more(|c| c.is_whitespace())("   anything")
+        )
+    }
+
 }
-
-/*
-
-x.json
-{
-    "user": {},
-    "preferences": [],
-    "username": ""
-}
-
-get "{"
-remove_whitespaces (x.json)
-
-
-
-*/
